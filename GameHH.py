@@ -19,6 +19,15 @@ class Square(p.sprite.Sprite):
         self.image = p.transform.scale(self.image, (self.width, self.height))
         self.rect = self.image.get_rect()
 
+    def update(self):
+        self.rect.center = (self.x, self.y)
+
+    def clicked(self, x_val, y_val):
+        global turn, won
+
+        if self.content == '':
+
+
 WIDTH = 500
 HEIGHT = 500
 
@@ -38,3 +47,7 @@ compMove = 5
 
 square_group = p.sprite.Group()
 squares = []
+
+board = [[] for i in range(MiniMax.LENGTH)]
+
+winners = []
