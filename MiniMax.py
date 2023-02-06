@@ -9,6 +9,7 @@ MIN_PLAYER_UTILITY = -1
 DRAW_UTILITY = 0
 LENGTH = 6
 HEIGHT = 7
+root = [[], [], [], [], [], []]
 
 
 class State:
@@ -18,7 +19,7 @@ class State:
         self.moves: list = moves
 
     def cell_is_full(self, cell):
-        if len(board[cell]) == HEIGHT:
+        if len(self.board[cell]) == HEIGHT:
             return True
         return False
 
@@ -158,6 +159,7 @@ def next_states(state: State, player):
             new_moves.append(i)
             states.append(State(deepcopy(new_board), state.score, new_moves))
     return states
+
 
 def get_next_move(root):
     start_time = time.time()
