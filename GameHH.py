@@ -9,8 +9,8 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 YELLOW = (0, 255, 255)
 
-HEIGHT = 3
-LENGTH = 9
+HEIGHT = 7
+LENGTH = 6
 
 
 def Create_board():

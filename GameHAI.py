@@ -8,10 +8,10 @@ BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
-YELLOW = (0, 255, 255)
+WHITE = (255, 255, 255)
 
-HEIGHT = 4
-LENGTH = 4
+HEIGHT = 7
+LENGTH = 6
 
 
 def Create_board():
@@ -78,7 +78,7 @@ def draw_board(board):
                 pygame.draw.circle(screen, RED, (
                     int(c * SQUARESIZE + SQUARESIZE / 2), height - int(r * SQUARESIZE + SQUARESIZE / 2)), RADIUS)
             elif board[r][c] == 2:
-                pygame.draw.circle(screen, YELLOW, (
+                pygame.draw.circle(screen, WHITE, (
                     int(c * SQUARESIZE + SQUARESIZE / 2), height - int(r * SQUARESIZE + SQUARESIZE / 2)), RADIUS)
     pygame.display.update()
 
@@ -114,7 +114,7 @@ while not game_over:
             if turn == 0:
                 pygame.draw.circle(screen, RED, (posx, int(SQUARESIZE / 2)), RADIUS)
             else:
-                pygame.draw.circle(screen, YELLOW, (posx, int(SQUARESIZE / 2)), RADIUS)
+                pygame.draw.circle(screen, WHITE, (posx, int(SQUARESIZE / 2)), RADIUS)
         pygame.display.update()
 
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -130,7 +130,7 @@ while not game_over:
                     Drop_piece(board, row, col, 1)
 
                     if winning_move(board, 1):
-                        label = font.render("Player 1 wins!!", 1, RED)
+                        label = font.render("Player 1 wins!!", True, RED)
                         screen.blit(label, (40, 10))
                         game_over = True
                     turn += 1
@@ -143,7 +143,7 @@ while not game_over:
                     Drop_piece(board, row, col, 2)
 
                     if winning_move(board, 2):
-                        label = font.render("Player 2 wins!!", 1, YELLOW)
+                        label = font.render("Player 2 wins!!", True, WHITE)
                         screen.blit(label, (40, 10))
                         game_over = True
                     turn += 1
