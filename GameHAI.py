@@ -1,3 +1,6 @@
+import copy
+import random
+
 import pygame
 import MiniMax
 import numpy as np
@@ -10,8 +13,10 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 WHITE = (255, 255, 255)
 
-HEIGHT = 7
-LENGTH = 6
+HEIGHT = 6
+LENGTH = 7
+HUMAN = 1
+AI = 2
 
 
 def Create_board():
@@ -83,6 +88,196 @@ def draw_board(board):
     pygame.display.update()
 
 
+def score_calculator(board):
+    AI_three_score = three_check(board, AI)
+    AI_two_score = two_check(board, AI)
+
+    HUMAN_three_score = three_check(board, HUMAN)
+    HUMAN_two_score = two_check(board, HUMAN)
+
+    score = AI_two_score + 10*AI_three_score - (10*HUMAN_three_score + HUMAN_two_score)
+    return score
+
+
+def three_check(board, player):
+    count_of_threes = 0
+    for r in range(HEIGHT - 1):
+        for c in range(LENGTH - 1):
+            if c < LENGTH - 3:
+                if board[r][c] == board[r][c + 1] == board[r][c + 2] == player and board[r][c + 3] == 0:
+                    count_of_threes += 1
+                if r < HEIGHT - 3:
+                    if board[r][c] == board[r + 1][c + 1] == board[r + 2][c + 2] == player and board[r + 3][c + 3] == 0:
+                        count_of_threes += 1
+            if c >= 3:
+                if board[r][c] == board[r][c - 1] == board[r][c - 2] == player and board[r][c - 3] == 0:
+                    count_of_threes += 1
+                if r < HEIGHT - 3:
+                    if board[r][c] == board[r + 1][c - 1] == board[r + 2][c - 2] == player and board[r + 3][c - 3] == 0:
+                        count_of_threes += 1
+
+            if r < HEIGHT - 3:
+                if board[r][c] == board[r + 1][c] == board[r + 2][c] == player and board[r + 3][c] == 0:
+                    count_of_threes += 1
+    return count_of_threes
+
+
+def two_check(board, player):
+    count_of_twos = 0
+    for r in range(HEIGHT - 1):
+        for c in range(LENGTH - 1):
+            if c < LENGTH - 3:
+                if board[r][c] == board[r][c + 1] == player and board[r][c + 2] == board[r][c + 3] == 0:
+                    count_of_twos += 1
+                if r < HEIGHT - 3:
+                    if board[r][c] == board[r + 1][c + 1] == player and board[r + 2][c + 2] == board[r + 3][c + 3] == 0:
+                        count_of_twos += 1
+            if c >= 3:
+                if board[r][c] == board[r][c - 1] == player and board[r][c - 2] == board[r][c - 3] == 0:
+                    count_of_twos += 1
+                if r < HEIGHT - 3:
+                    if board[r][c] == board[r + 1][c - 1] == player and board[r + 2][c - 2] == board[r + 3][c - 3] == 0:
+                        count_of_twos += 1
+
+            if r < HEIGHT - 3:
+                if board[r][c] == board[r + 1][c] == player and board[r + 2][c] == board[r + 3][c] == 0:
+                    count_of_twos += 1
+    return count_of_twos
+
+
+def find_bestMove(board, player):
+    playable_moves = find_playable_locations(board)
+    best_score = float("-inf")
+    best_col = random.choice(playable_moves)
+    for col in playable_moves:
+        row = get_next_open_row(board, col)
+        temp_board = copy.deepcopy(board)
+        Drop_piece(temp_board, row, col, player)
+        if winning_move(temp_board, AI):
+            score = 1000000
+        else:
+            score = score_calculator(temp_board)
+        if score > best_score:
+            best_score = score
+            best_col = col
+    return best_col
+
+
+def find_playable_locations(board):
+    playable_locations = []
+    for col in range(LENGTH):
+        if is_valid_location(board, col):
+            playable_locations.append(col)
+    return playable_locations
+
+
+def my_MiniMax(board, alpha, beta, depth, maximizingPlayer):
+    playable_locations = find_playable_locations(board)
+    is_terminal_state, winner = we_have_match(board)
+    if (depth == 0) or is_terminal_state:
+        if is_terminal_state:
+            if winner == AI:
+                return (None, 1000000)
+            if winner == HUMAN:
+                return (None, -1000000)
+            else:
+                return (None, 0)
+        else:
+            return (None, score_calculator(board))
+    if maximizingPlayer:
+        value = float("-inf")
+        column = random.choice(playable_locations)
+        for col in playable_locations:
+            row = get_next_open_row(board, col)
+            temp_board = board.copy()
+            Drop_piece(temp_board, row, col, AI)
+            new_score = my_MiniMax(temp_board, alpha, beta, depth - 1, False)[1]
+            if new_score > value:
+                value = new_score
+                column = col
+
+            alpha = max(alpha, value)
+            if alpha >= beta:
+                break
+        return column, value
+    else:
+        value = float("inf")
+        column = random.choice(playable_locations)
+        for col in playable_locations:
+            row = get_next_open_row(board, col)
+            temp_board = board.copy()
+            Drop_piece(temp_board, row, col, AI)
+            new_score = my_MiniMax(temp_board, alpha, beta, depth - 1, True)[1]
+            if new_score < value:
+                value = new_score
+                column = col
+
+            beta = min(beta, value)
+            if alpha >= beta:
+                break
+        return column, value
+
+
+def we_have_match(board):
+    if (is_vertical_match(board, AI)) or (is_horizontal_match(board, AI)) or (is_diognal_match(board, AI)):
+        return True, AI
+
+    if (is_vertical_match(board, HUMAN)) or (is_horizontal_match(board, HUMAN)) or (is_diognal_match(board, HUMAN)):
+        return True, HUMAN
+
+    if is_all_full(board):
+        return True, 0
+
+    return False, None
+
+
+def is_all_full(board):
+    for cell in board:
+        if 0 in cell:
+            return False
+    return True
+
+
+def is_vertical_match(board, player):
+    for i in range(board.shape[0] - 3):
+        for j in range(board.shape[1]):
+            if (board[i][j] == player and board[i + 1][j] == player and board[i + 2][j] == player and board[i + 3][
+                j] == player):
+                return True
+    return False
+
+
+def is_horizontal_match(board, player):
+    for i in range(board.shape[0]):
+        for j in range(board.shape[1] - 3):
+            if (board[i][j] == player and board[i][j + 1] == player and board[i][j + 2] == player and board[i][
+                j + 3] == player):
+                return True
+    return False
+
+
+def is_diognal_match(board, player):
+    for i in range(board.shape[0]):
+        if i + 3 >= board.shape[0]:
+            continue
+        for j in range(board.shape[1]):
+            if j + 3 >= board.shape[1]:
+                continue
+            if (board[i][j] == player and board[i + 1][j + 1] == player and board[i + 2][j + 2] == player and
+                    board[i + 3][j + 3] == player):
+                return True
+    for i in range(board.shape[0]):
+        if i - 3 < 0:
+            continue
+        for j in range(board.shape[1]):
+            if j + 3 >= board.shape[1]:
+                continue
+            if (board[i][j] == player and board[i - 1][j + 1] == player and board[i - 2][j + 2] == player and
+                    board[i - 3][j + 3] == player):
+                return True
+    return False
+
+
 board = Create_board()
 print_board(board)
 game_over = False
@@ -137,7 +332,8 @@ while not game_over:
                     turn = turn % 2
 
             else:
-                col = MiniMax.get_next_move(board)
+                col = find_bestMove(board, AI)
+                print(col)
                 if is_valid_location(board, col):
                     row = get_next_open_row(board, col)
                     Drop_piece(board, row, col, 2)
