@@ -119,7 +119,7 @@ while not game_over:
 
             print_board(board)
             if turn == 0:
-                col = MiniMax.get_next_move(root=board, depth=2, player=turn + 1)
+                col = MiniMax.get_next_move(root=board, depth=3, player=turn + 1)
                 if is_valid_location(board, col):
                     row = get_next_open_row(board, col)
                     Drop_piece(board, row, col, 1)
