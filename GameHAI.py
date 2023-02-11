@@ -35,10 +35,7 @@ def get_next_open_row(board, col):
 
 
 def print_board(board):
-    print("_________________________")
-    # print(board)
     print(np.flip(board, 0))
-    # print(board[0][1])
     print("_________________________")
 
 
@@ -139,7 +136,6 @@ while not game_over:
 
             else:
                 col = MiniMax.get_next_move(board)
-                print(col)
                 if is_valid_location(board, col):
                     row = get_next_open_row(board, col)
                     Drop_piece(board, row, col, 2)

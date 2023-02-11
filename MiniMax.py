@@ -7,8 +7,8 @@ import copy
 
 MAX_PLAYER = 2
 MIN_PLAYER = 1
-MAX_PLAYER_UTILITY = 1
-MIN_PLAYER_UTILITY = -1
+MAX_PLAYER_UTILITY = 100000
+MIN_PLAYER_UTILITY = -100000
 DRAW_UTILITY = 0
 root1 = np.zeros((4, 4))
 
@@ -133,7 +133,6 @@ def is_diognal_match(board, player):
     return False
 
 
-
 def utility(state: State):
     board = state.board
     if is_vertical_match(board, MAX_PLAYER) or is_horizontal_match(board, MAX_PLAYER) or is_diognal_match(board,
@@ -167,6 +166,7 @@ def next_states(state: State, player):
             new_moves.append(c)
             states.append(State(deepcopy(new_board), state.score, new_moves))
     return states
+
 
 def score_calculator(board):
     MAX_PLAYER_three_score = three_check(board, MAX_PLAYER)
@@ -225,18 +225,16 @@ def two_check(board, player):
     return count_of_twos
 
 
-
 def get_next_move(root):
     start_time = time.time()
-    final_state = alpha_beta_search(root, depth=8)
+    final_state = alpha_beta_search(root, depth=5)
     end_time = time.time()
     print('took:', end_time - start_time, 'ns')
     print('predicted final score:', final_state.score)
     print('predicted final board:\n', np.flip(final_state.board, 0))
     print('moves to reach final board:', final_state.moves)
-    print()
+
     if len(final_state.moves) > 0:
-        # print(final_state.moves)
         return final_state.moves[0]
 
     else:
