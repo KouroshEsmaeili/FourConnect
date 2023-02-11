@@ -21,10 +21,13 @@ class State:
         self.moves: list = moves
 
 
-def alpha_beta_search(root, depth):
+def alpha_beta_search(root, depth, player):
     a = deepcopy(root)
     root_state = State(a, 0, [])
-    return max_value(root_state, -INFINITY, INFINITY, depth)
+    if player == MAX_PLAYER:
+        return max_value(root_state, -INFINITY, INFINITY, depth)
+    else:
+        return min_value(root_state, -INFINITY, INFINITY, depth)
 
 
 def max_value(state: State, alpha, beta, depth):
@@ -228,9 +231,9 @@ def two_check(board, player):
     return count_of_twos
 
 
-def get_next_move(root):
+def get_next_move(root, depth, player):
     start_time = time.time()
-    final_state = alpha_beta_search(root, depth=5)
+    final_state = alpha_beta_search(root, depth=depth, player=player)
     end_time = time.time()
     print('took:', end_time - start_time, 'ns')
     print('predicted final score:', final_state.score)

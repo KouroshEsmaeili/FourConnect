@@ -14,7 +14,6 @@ HEIGHT = 6
 LENGTH = 7
 
 
-
 def Create_board():
     board = np.zeros((HEIGHT, LENGTH))
     return board
@@ -135,7 +134,7 @@ while not game_over:
                     turn = turn % 2
 
             else:
-                col = MiniMax.get_next_move(board)
+                col = MiniMax.get_next_move(root=board, depth=5, player=2)
                 if is_valid_location(board, col):
                     row = get_next_open_row(board, col)
                     Drop_piece(board, row, col, 2)
