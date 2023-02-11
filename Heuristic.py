@@ -6,7 +6,8 @@ import numpy as np
 class Heuristic:
     def __init__(self, board: np.array):
         self.board: np.array = board
-        self.score = 0
+        self.rewards = {'three_connect_two_blanks': -10000, 'three_connect_one_blank': -2000,
+                        'two_connect_two_blanks': -50, 'two_connect_one_blank': -10}
 
     def find_horizontal(self, length: int, player: int):  # Checked
         count_one_blank = 0
@@ -67,7 +68,7 @@ class Heuristic:
                     num_count = 0
         return count_one_blank, count_two_blank
 
-    def diagonal(self, length: int, player: int):  # Checked
+    def find_diagonal(self, length: int, player: int):  # Checked
         diagonal_axes_main: list = []
         diagonal_axes_rot: list = []
         diagonal_axes: list = []
@@ -127,3 +128,31 @@ class Heuristic:
                             count_one_blank += 1
                     num_count = 0
         return count_one_blank, count_two_blank
+
+    def get_score_player(self, player: int):
+        three_connect_one_blank_H, three_connect_two_blanks_H = self.find_horizontal(3, player)
+        three_connect_one_blank_V, three_connect_two_blanks_V = self.find_vertical(3, player)
+        three_connect_one_blank_D, three_connect_two_blanks_D = self.find_diagonal(3, player)
+        two_connect_one_blank_H, two_connect_two_blanks_H = self.find_horizontal(2, player)
+        two_connect_one_blank_V, two_connect_two_blanks_V = self.find_vertical(2, player)
+        two_connect_one_blank_D, two_connect_two_blanks_D = self.find_diagonal(2, player)
+        three_connect_two_blanks = three_connect_two_blanks_H + three_connect_two_blanks_V + three_connect_two_blanks_D
+        three_connect_one_blank = three_connect_one_blank_H + three_connect_one_blank_V + three_connect_one_blank_D
+        two_connect_two_blanks = two_connect_two_blanks_H + two_connect_two_blanks_V + two_connect_two_blanks_D
+        two_connect_one_blank = two_connect_one_blank_H + two_connect_one_blank_V + two_connect_one_blank_D
+        score = self.rewards['three_connect_two_blanks'] * three_connect_two_blanks + self.rewards[
+            'three_connect_one_blank'] * three_connect_one_blank + \
+                self.rewards['two_connect_two_blanks'] * two_connect_two_blanks + self.rewards[
+                    'two_connect_one_blank'] * two_connect_one_blank
+        return score
+
+    def get_score(self, player):
+        opponent = 0
+        if player == 1:
+            opponent = 2
+        elif player == 2:
+            opponent = 1
+        else:
+            raise Exception('No Such Player')  # Designed to be two players game
+        score = self.get_score_player(player) - self.get_score_player(opponent)
+        return score
