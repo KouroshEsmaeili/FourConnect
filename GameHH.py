@@ -9,8 +9,8 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 WHITE = (255, 255, 255)
 
-HEIGHT = 7
-LENGTH = 6
+HEIGHT = 6
+LENGTH = 7
 
 
 def Create_board():
@@ -33,10 +33,7 @@ def get_next_open_row(board, col):
 
 
 def print_board(board):
-    print("_________________________")
-    print(board)
     print(np.flip(board, 0))
-    # print(board[0][1])
     print("_________________________")
 
 
@@ -127,7 +124,7 @@ while not game_over:
                     Drop_piece(board, row, col, 1)
 
                     if winning_move(board, 1):
-                        label = font.render("Player 1 wins!!", 1, RED)
+                        label = font.render("Player 1 wins!!", True, RED)
                         screen.blit(label, (40, 10))
                         game_over = True
                     turn += 1
@@ -141,7 +138,7 @@ while not game_over:
                     Drop_piece(board, row, col, 2)
 
                     if winning_move(board, 2):
-                        label = font.render("Player 2 wins!!", 1, WHITE)
+                        label = font.render("Player 2 wins!!", True, WHITE)
                         screen.blit(label, (40, 10))
                         game_over = True
                     turn += 1
@@ -149,8 +146,6 @@ while not game_over:
 
             print_board(board)
             draw_board(board)
-
-
 
             if game_over:
                 pygame.time.wait(3000)
