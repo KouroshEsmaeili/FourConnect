@@ -4,6 +4,7 @@ import time
 import numpy as np
 import random
 import copy
+from Heuristic import Heuristic
 
 MAX_PLAYER = 2
 MIN_PLAYER = 1
@@ -176,6 +177,8 @@ def score_calculator(board):
     MIN_PLAYER_two_score = two_check(board, MIN_PLAYER)
 
     score = MAX_PLAYER_two_score + 10 * MAX_PLAYER_three_score - (10 * MIN_PLAYER_three_score + MIN_PLAYER_two_score)
+    # obj = Heuristic(board)
+    # score = obj.get_score(MAX_PLAYER)
     return score
 
 
