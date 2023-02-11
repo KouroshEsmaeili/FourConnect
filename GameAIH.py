@@ -120,8 +120,7 @@ while not game_over:
 
             print_board(board)
             if turn == 0:
-                posx = event.pos[0]
-                col = int(math.floor(posx / SQUARESIZE))
+                col = MiniMax.get_next_move(board, 1)
 
                 if is_valid_location(board, col):
                     row = get_next_open_row(board, col)
@@ -135,7 +134,9 @@ while not game_over:
                     turn = turn % 2
 
             else:
-                col = MiniMax.get_next_move(board, 2)
+
+                posx = event.pos[0]
+                col = int(math.floor(posx / SQUARESIZE))
                 if is_valid_location(board, col):
                     row = get_next_open_row(board, col)
                     Drop_piece(board, row, col, 2)
