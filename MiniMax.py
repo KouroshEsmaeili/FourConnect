@@ -18,7 +18,6 @@ class State:
         self.board = board
         self.score = score
         self.moves: list = moves
-        self.height, self.length = board.shape
 
 
 def alpha_beta_search(root, depth):
@@ -229,7 +228,7 @@ def two_check(board, player):
 
 def get_next_move(root):
     start_time = time.time()
-    final_state = alpha_beta_search(root, depth=4)
+    final_state = alpha_beta_search(root, depth=8)
     end_time = time.time()
     print('took:', end_time - start_time, 'ns')
     print('predicted final score:', final_state.score)
