@@ -2,6 +2,8 @@ from copy import deepcopy
 from json.encoder import INFINITY
 import time
 import numpy as np
+import random
+import copy
 
 MAX_PLAYER = 2
 MIN_PLAYER = 1
@@ -19,19 +21,20 @@ class State:
         self.height, self.length = board.shape
 
 
-def alpha_beta_search(root):
+def alpha_beta_search(root, depth):
     a = deepcopy(root)
     root_state = State(a, 0, [])
-    return max_value(root_state, -INFINITY, INFINITY)
+    return max_value(root_state, -INFINITY, INFINITY, depth)
 
 
-def max_value(state: State, alpha, beta):
+def max_value(state: State, alpha, beta, depth):
     if terminal_test(state):
         return utility(state)
-
+    if depth == 0:
+        return State(deepcopy(state.board), score_calculator(state.board), deepcopy(state.moves))
     v = State(board=deepcopy(root1), score=-INFINITY, moves=[])
     for next_state in next_states(state, MAX_PLAYER):
-        v = get_max_state(v, min_value(next_state, alpha, beta))
+        v = get_max_state(v, min_value(next_state, alpha, beta, depth - 1))
         if v.score >= beta:
             return v
         alpha = max(alpha, v.score)
@@ -39,13 +42,14 @@ def max_value(state: State, alpha, beta):
     return v
 
 
-def min_value(state: State, alpha, beta):
+def min_value(state: State, alpha, beta, depth):
     if terminal_test(state):
         return utility(state)
-
+    if depth == 0:
+        return State(deepcopy(state.board), score_calculator(state.board), deepcopy(state.moves))
     v = State(deepcopy(root1), INFINITY, [])
     for next_state in next_states(state, MIN_PLAYER):
-        v = get_min_state(v, max_value(next_state, alpha, beta))
+        v = get_min_state(v, max_value(next_state, alpha, beta, depth - 1))
         if v.score <= alpha:
             return v
         beta = min(beta, v.score)
@@ -130,6 +134,7 @@ def is_diognal_match(board, player):
     return False
 
 
+
 def utility(state: State):
     board = state.board
     if is_vertical_match(board, MAX_PLAYER) or is_horizontal_match(board, MAX_PLAYER) or is_diognal_match(board,
@@ -164,10 +169,67 @@ def next_states(state: State, player):
             states.append(State(deepcopy(new_board), state.score, new_moves))
     return states
 
+def score_calculator(board):
+    MAX_PLAYER_three_score = three_check(board, MAX_PLAYER)
+    MAX_PLAYER_two_score = two_check(board, MAX_PLAYER)
+
+    MIN_PLAYER_three_score = three_check(board, MIN_PLAYER)
+    MIN_PLAYER_two_score = two_check(board, MIN_PLAYER)
+
+    score = MAX_PLAYER_two_score + 10 * MAX_PLAYER_three_score - (10 * MIN_PLAYER_three_score + MIN_PLAYER_two_score)
+    return score
+
+
+def three_check(board, player):
+    count_of_threes = 0
+    for r in range(board.shape[0] - 1):
+        for c in range(board.shape[1] - 1):
+            if c < board.shape[1] - 3:
+                if board[r][c] == board[r][c + 1] == board[r][c + 2] == player and board[r][c + 3] == 0:
+                    count_of_threes += 1
+                if r < board.shape[0] - 3:
+                    if board[r][c] == board[r + 1][c + 1] == board[r + 2][c + 2] == player and board[r + 3][c + 3] == 0:
+                        count_of_threes += 1
+            if c >= 3:
+                if board[r][c] == board[r][c - 1] == board[r][c - 2] == player and board[r][c - 3] == 0:
+                    count_of_threes += 1
+                if r < board.shape[0] - 3:
+                    if board[r][c] == board[r + 1][c - 1] == board[r + 2][c - 2] == player and board[r + 3][c - 3] == 0:
+                        count_of_threes += 1
+
+            if r < board.shape[0] - 3:
+                if board[r][c] == board[r + 1][c] == board[r + 2][c] == player and board[r + 3][c] == 0:
+                    count_of_threes += 1
+    return count_of_threes
+
+
+def two_check(board, player):
+    count_of_twos = 0
+    for r in range(board.shape[0] - 1):
+        for c in range(board.shape[1] - 1):
+            if c < board.shape[1] - 3:
+                if board[r][c] == board[r][c + 1] == player and board[r][c + 2] == board[r][c + 3] == 0:
+                    count_of_twos += 1
+                if r < board.shape[0] - 3:
+                    if board[r][c] == board[r + 1][c + 1] == player and board[r + 2][c + 2] == board[r + 3][c + 3] == 0:
+                        count_of_twos += 1
+            if c >= 3:
+                if board[r][c] == board[r][c - 1] == player and board[r][c - 2] == board[r][c - 3] == 0:
+                    count_of_twos += 1
+                if r < board.shape[0] - 3:
+                    if board[r][c] == board[r + 1][c - 1] == player and board[r + 2][c - 2] == board[r + 3][c - 3] == 0:
+                        count_of_twos += 1
+
+            if r < board.shape[0] - 3:
+                if board[r][c] == board[r + 1][c] == player and board[r + 2][c] == board[r + 3][c] == 0:
+                    count_of_twos += 1
+    return count_of_twos
+
+
 
 def get_next_move(root):
     start_time = time.time()
-    final_state = alpha_beta_search(root)
+    final_state = alpha_beta_search(root, depth=4)
     end_time = time.time()
     print('took:', end_time - start_time, 'ns')
     print('predicted final score:', final_state.score)
