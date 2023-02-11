@@ -231,9 +231,9 @@ def two_check(board, player):
     return count_of_twos
 
 
-def get_next_move(root, player):
+def get_next_move(root, depth, player):
     start_time = time.time()
-    final_state = alpha_beta_search(root, depth=5, player=player)
+    final_state = alpha_beta_search(root, depth=depth, player=player)
     end_time = time.time()
     print('took:', end_time - start_time, 'ns')
     print('predicted final score:', final_state.score)

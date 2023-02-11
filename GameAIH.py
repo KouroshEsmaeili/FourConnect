@@ -14,7 +14,6 @@ HEIGHT = 6
 LENGTH = 7
 
 
-
 def Create_board():
     board = np.zeros((HEIGHT, LENGTH))
     return board
@@ -120,7 +119,7 @@ while not game_over:
 
             print_board(board)
             if turn == 0:
-                col = MiniMax.get_next_move(board, 1)
+                col = MiniMax.get_next_move(root=board, depth=5, player=1)
 
                 if is_valid_location(board, col):
                     row = get_next_open_row(board, col)
