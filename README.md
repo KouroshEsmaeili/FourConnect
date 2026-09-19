@@ -71,15 +71,22 @@ pyproject.toml
 
 ## Installation
 
-```bash
+Create and activate a virtual environment, then install the project:
+
+### Windows PowerShell
+
+```powershell
 python -m venv .venv
+.\.venv\Scripts\Activate.ps1
 python -m pip install -e .
 ```
 
-On Windows PowerShell:
+### macOS / Linux
 
-```powershell
-.\.venv\Scripts\Activate.ps1
+```bash
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install -e .
 ```
 
 ## Run
