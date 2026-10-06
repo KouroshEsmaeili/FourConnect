@@ -5,13 +5,16 @@ import numpy as np
 from connect_four.board import (
     PLAYER_ONE,
     PLAYER_TWO,
+    copy_with_move,
     create_board,
     drop_piece,
     get_next_open_row,
+    get_ordered_valid_moves,
     get_valid_moves,
     is_draw,
     is_valid_move,
     is_winning_move,
+    other_player,
 )
 from connect_four.config import GameConfig
 
@@ -41,8 +44,42 @@ class BoardTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             drop_piece(self.board, 0, PLAYER_ONE)
 
+    def test_out_of_range_columns_are_rejected_safely(self) -> None:
+        for column in (-1, self.config.columns):
+            with self.subTest(column=column):
+                self.assertFalse(is_valid_move(self.board, column))
+                self.assertIsNone(get_next_open_row(self.board, column))
+                with self.assertRaises(ValueError):
+                    drop_piece(self.board, column, PLAYER_ONE)
+
+    def test_invalid_player_is_rejected(self) -> None:
+        with self.assertRaises(ValueError):
+            drop_piece(self.board, 0, 3)
+
+    def test_other_player_validates_input(self) -> None:
+        self.assertEqual(PLAYER_TWO, other_player(PLAYER_ONE))
+        self.assertEqual(PLAYER_ONE, other_player(PLAYER_TWO))
+        with self.assertRaises(ValueError):
+            other_player(0)
+
     def test_valid_moves(self) -> None:
         self.assertEqual(list(range(7)), get_valid_moves(self.board))
+
+    def test_center_first_ordering_on_odd_width_board(self) -> None:
+        self.assertEqual([3, 2, 4, 1, 5, 0, 6], get_ordered_valid_moves(self.board))
+
+    def test_center_first_ordering_on_even_width_board(self) -> None:
+        config = GameConfig(rows=6, columns=6, connect=4)
+        board = create_board(config)
+
+        self.assertEqual([2, 3, 1, 4, 0, 5], get_ordered_valid_moves(board))
+
+    def test_copy_with_move_does_not_mutate_original(self) -> None:
+        copied = copy_with_move(self.board, 3, PLAYER_ONE)
+
+        self.assertTrue(np.all(self.board == 0))
+        self.assertEqual(PLAYER_ONE, copied[0, 3])
+        self.assertFalse(np.shares_memory(self.board, copied))
 
     def test_horizontal_win(self) -> None:
         for column in range(4):

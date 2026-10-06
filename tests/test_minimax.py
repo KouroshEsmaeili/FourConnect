@@ -1,6 +1,12 @@
 import unittest
 
-from connect_four.board import PLAYER_ONE, PLAYER_TWO, create_board, drop_piece
+from connect_four.board import (
+    PLAYER_ONE,
+    PLAYER_TWO,
+    create_board,
+    drop_piece,
+    is_valid_move,
+)
 from connect_four.config import GameConfig
 from connect_four.minimax import WIN_UTILITY, alpha_beta_search
 
@@ -17,6 +23,13 @@ class MinimaxTests(unittest.TestCase):
         result = alpha_beta_search(board, depth=3, player=PLAYER_ONE, connect=4)
         self.assertEqual(3, result.column)
         self.assertGreaterEqual(result.score, WIN_UTILITY)
+
+    def test_zero_and_negative_depth_are_rejected(self) -> None:
+        board = create_board(self.config)
+
+        for depth in (0, -1):
+            with self.subTest(depth=depth), self.assertRaises(ValueError):
+                alpha_beta_search(board, depth, PLAYER_ONE, self.config.connect)
 
     def test_player_two_takes_immediate_win(self) -> None:
         board = create_board(self.config)
@@ -42,7 +55,28 @@ class MinimaxTests(unittest.TestCase):
 
         result = alpha_beta_search(board, depth=2, player=PLAYER_ONE, connect=4)
         self.assertIsNotNone(result.column)
-        self.assertNotEqual(3, result.column)
+        self.assertTrue(is_valid_move(board, result.column))
+
+    def test_search_result_reports_principal_variation_and_stats(self) -> None:
+        board = create_board(self.config)
+
+        result = alpha_beta_search(board, depth=2, player=PLAYER_ONE, connect=4)
+
+        self.assertIsNotNone(result.column)
+        self.assertEqual(result.column, result.principal_variation[0])
+        self.assertGreater(result.nodes_evaluated, 0)
+        self.assertGreaterEqual(result.alpha_beta_cutoffs, 0)
+
+    def test_deterministic_position_returns_deterministic_move_and_pv(self) -> None:
+        board = create_board(self.config)
+        drop_piece(board, 3, PLAYER_ONE)
+        drop_piece(board, 2, PLAYER_TWO)
+
+        first = alpha_beta_search(board, depth=3, player=PLAYER_ONE, connect=4)
+        second = alpha_beta_search(board, depth=3, player=PLAYER_ONE, connect=4)
+
+        self.assertEqual(first.column, second.column)
+        self.assertEqual(first.principal_variation, second.principal_variation)
 
     def test_terminal_board_returns_no_move(self) -> None:
         board = create_board(self.config)

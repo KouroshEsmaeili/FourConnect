@@ -180,9 +180,7 @@ def alpha_beta_search(
     stats = SearchStats()
     start = perf_counter()
 
-    terminal_score = _terminal_score(
-        board, player, connect, remaining_depth=depth
-    )
+    terminal_score = _terminal_score(board, player, connect, remaining_depth=depth)
     if terminal_score is not None:
         elapsed = perf_counter() - start
         stats.nodes_evaluated += 1

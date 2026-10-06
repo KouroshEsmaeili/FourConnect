@@ -63,11 +63,7 @@ def drop_piece(board: Board, column: int, player: int) -> int:
 
 
 def get_valid_moves(board: Board) -> list[int]:
-    return [
-        column
-        for column in range(board.shape[1])
-        if is_valid_move(board, column)
-    ]
+    return [column for column in range(board.shape[1]) if is_valid_move(board, column)]
 
 
 def get_ordered_valid_moves(board: Board) -> list[int]:

@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from .board import Board, EMPTY, iter_windows, other_player
+from .board import EMPTY, Board, iter_windows, other_player
 
 
 @dataclass(frozen=True)
@@ -81,8 +81,8 @@ def _center_control_score(
         player_count = int(np.count_nonzero(board[:, column] == player))
         opponent_count = int(np.count_nonzero(board[:, column] == opponent))
         score += (
-            player_count - opponent_count
-        ) * positional_weight * weights.center_weight
+            (player_count - opponent_count) * positional_weight * weights.center_weight
+        )
 
     return score
 
