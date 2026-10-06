@@ -31,14 +31,14 @@ BOARD_BLUE_DARK = (41, 81, 154)
 SLOT_BG = (10, 14, 22)
 SLOT_RIM = (70, 110, 190)
 
-PLAYER_ONE_COLOR = (232, 82, 88)    # red
+PLAYER_ONE_COLOR = (232, 82, 88)  # red
 PLAYER_TWO_COLOR = (244, 244, 248)  # white
 
 TEXT = (240, 243, 248)
 TEXT_MUTED = (171, 180, 196)
 
-ACCENT = (255, 204, 64)             # gold
-SUCCESS = (80, 200, 120)            # green
+ACCENT = (255, 204, 64)  # gold
+SUCCESS = (80, 200, 120)  # green
 PREVIEW_ALPHA = 145
 HOVER_ALPHA = 28
 OVERLAY_ALPHA = 165
@@ -94,7 +94,9 @@ class ConnectFourApp:
         self.screen = pygame.display.set_mode((self.width, self.height))
         pygame.display.set_caption("Connect Four — Minimax")
 
-        self.title_font = pygame.font.SysFont("segoe ui", max(24, cell_size // 3), bold=True)
+        self.title_font = pygame.font.SysFont(
+            "segoe ui", max(24, cell_size // 3), bold=True
+        )
         self.font = pygame.font.SysFont("segoe ui", max(20, cell_size // 4))
         self.small_font = pygame.font.SysFont("segoe ui", max(16, cell_size // 6))
 
@@ -284,7 +286,11 @@ class ConnectFourApp:
             (0, 0, self.width, self.top_bar_height),
         )
 
-        title = f"{self.mode_label()}   •   {self.config.rows}×{self.config.columns}   •   Connect {self.config.connect}"
+        title = (
+            f"{self.mode_label()}   •   "
+            f"{self.config.rows}×{self.config.columns}   •   "
+            f"Connect {self.config.connect}"
+        )
         title_surface = self.title_font.render(title, True, TEXT)
         self.screen.blit(title_surface, (16, 10))
 
@@ -296,7 +302,8 @@ class ConnectFourApp:
                 dots = "." * ((int(monotonic() * 3) % 3) + 1)
                 depth = self.agents[self.current_player].depth
                 status_text = (
-                    f"{self.player_name(self.current_player)} (AI, depth={depth}) is thinking{dots}"
+                    f"{self.player_name(self.current_player)} "
+                    f"(AI, depth={depth}) is thinking{dots}"
                 )
             else:
                 status_text = f"{self.player_name(self.current_player)} turn"
@@ -304,8 +311,12 @@ class ConnectFourApp:
         status_surface = self.font.render(status_text, True, TEXT)
         self.screen.blit(status_surface, (16, self.top_bar_height - 34))
 
-        help_surface = self.small_font.render("R: restart   •   ESC: quit", True, TEXT_MUTED)
-        help_rect = help_surface.get_rect(topright=(self.width - 16, self.top_bar_height - 30))
+        help_surface = self.small_font.render(
+            "R: restart   •   ESC: quit", True, TEXT_MUTED
+        )
+        help_rect = help_surface.get_rect(
+            topright=(self.width - 16, self.top_bar_height - 30)
+        )
         self.screen.blit(help_surface, help_rect)
 
         if not self.game_over:
@@ -342,7 +353,9 @@ class ConnectFourApp:
         self.screen.blit(highlight, (column * self.cell_size, self.board_top))
 
         # Top preview piece
-        preview_surface = pygame.Surface((self.cell_size, self.top_bar_height), pygame.SRCALPHA)
+        preview_surface = pygame.Surface(
+            (self.cell_size, self.top_bar_height), pygame.SRCALPHA
+        )
         color = self.player_color(self.current_player) + (PREVIEW_ALPHA,)
         pygame.draw.circle(
             preview_surface,
@@ -357,7 +370,9 @@ class ConnectFourApp:
 
         # Board background
         pygame.draw.rect(self.screen, BOARD_BLUE_DARK, board_rect)
-        pygame.draw.rect(self.screen, BOARD_BLUE, board_rect.inflate(-6, -6), border_radius=8)
+        pygame.draw.rect(
+            self.screen, BOARD_BLUE, board_rect.inflate(-6, -6), border_radius=8
+        )
 
         # Empty slots
         for visual_row in range(self.config.rows):
@@ -410,7 +425,10 @@ class ConnectFourApp:
         )
 
         help_text = "Click a column to drop a piece"
-        if self.controller_for(self.current_player) == Controller.AI and not self.game_over:
+        if (
+            self.controller_for(self.current_player) == Controller.AI
+            and not self.game_over
+        ):
             help_text = "AI move in progress..."
         if self.game_over:
             help_text = "Press R to restart or ESC to quit"

@@ -21,6 +21,4 @@ class GameConfig:
         if self.connect < 2:
             raise ValueError("connect must be at least 2")
         if self.connect > max(self.rows, self.columns):
-            raise ValueError(
-                "connect cannot be larger than both board dimensions"
-            )
+            raise ValueError("connect cannot be larger than both board dimensions")
